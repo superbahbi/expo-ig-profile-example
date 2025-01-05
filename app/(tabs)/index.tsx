@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Animated } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Animated, RefreshControl } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { Image } from 'expo-image';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ const imageSize = screenWidth / 3 - 4; // Grid image size
 export default function TabOneScreen() {
   const [activeTab, setActiveTab] = useState('grid'); // State for active tab
   const underlineLeft = useRef(new Animated.Value((tabWidth - underlineWidth) / 2)).current; // Initial position
+  const [refreshing, setRefreshing] = useState(false); // State for refresh control
 
   const handleTabPress = (tab) => {
     setActiveTab(tab);
@@ -21,6 +22,14 @@ export default function TabOneScreen() {
       duration: 300,
       useNativeDriver: false,
     }).start();
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    // Simulate a network request or data refresh
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
   };
 
   const profileHeader = () => (
@@ -85,20 +94,22 @@ export default function TabOneScreen() {
       </ScrollView>
 
       {/* Tab Section */}
-      <View style={styles.tabContainer}>
-        {['grid', 'reels', 'tags'].map((tab, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.tab}
-            onPress={() => handleTabPress(tab)}
-          >
-            <MaterialIcons
-              name={tab === 'grid' ? 'grid-on' : tab === 'reels' ? 'video-library' : 'tag'}
-              size={24}
-              color={activeTab === tab ? 'black' : 'gray'}
-            />
-          </TouchableOpacity>
-        ))}
+      <View View style={styles.tabContainer} >
+        {
+          ['grid', 'reels', 'tags'].map((tab, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.tab}
+              onPress={() => handleTabPress(tab)}
+            >
+              <MaterialIcons
+                name={tab === 'grid' ? 'grid-on' : tab === 'reels' ? 'video-library' : 'tag'}
+                size={24}
+                color={activeTab === tab ? 'black' : 'gray'}
+              />
+            </TouchableOpacity>
+          ))
+        }
         {/* Underline Animation */}
         <Animated.View
           style={[
@@ -109,11 +120,11 @@ export default function TabOneScreen() {
             },
           ]}
         />
-      </View>
+      </View >
     </>
   );
 
-  const gridContent = () => {
+  const renderTabContent = () => {
     const images = Array.from({ length: 20 }, (_, index) => ({
       id: index.toString(),
       uri: `https://picsum.photos/200/200?random=${index + 1}`,
@@ -131,54 +142,6 @@ export default function TabOneScreen() {
       />
     );
   };
-  const reelsContent = () => {
-    const images = Array.from({ length: 20 }, (_, index) => ({
-      id: index.toString(),
-      uri: `https://picsum.photos/200/200?random=${index + 50}`,
-    }));
-
-    return (
-      <FlatList
-        data={images}
-        keyExtractor={(item) => item.id}
-        numColumns={3}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item.uri }} style={styles.reelsImage} />
-        )}
-        contentContainerStyle={styles.gridContainer}
-      />
-    );
-  };
-  const tagsContent = () => {
-    const images = Array.from({ length: 20 }, (_, index) => ({
-      id: index.toString(),
-      uri: `https://picsum.photos/200/200?random=${index + 100}`,
-    }));
-
-    return (
-      <FlatList
-        data={images}
-        keyExtractor={(item) => item.id}
-        numColumns={3}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item.uri }} style={styles.tagsImage} />
-        )}
-        contentContainerStyle={styles.gridContainer}
-      />
-    );
-  };
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'grid':
-        return gridContent();
-      case 'reels':
-        return reelsContent();
-      case 'tags':
-        return tagsContent();
-      default:
-        return null;
-    }
-  };
 
   return (
     <FlatList
@@ -190,6 +153,10 @@ export default function TabOneScreen() {
       }}
       keyExtractor={(item, index) => index.toString()}
       contentContainerStyle={styles.scrollContainer}
+      style={{ backgroundColor: 'white' }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     />
   );
 }
@@ -298,16 +265,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   gridImage: {
-    width: imageSize,
-    height: imageSize,
-    margin: 2,
-  },
-  reelsImage: {
-    width: imageSize,
-    height: imageSize * 2,
-    margin: 2,
-  },
-  tagsImage: {
     width: imageSize,
     height: imageSize,
     margin: 2,
