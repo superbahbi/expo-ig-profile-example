@@ -62,15 +62,24 @@ export default function TabOneScreen() {
 
       {/* Button Section */}
       <View style={styles.buttonContainer}>
-        {["Edit Profile", "Share Profile"].map((buttonText, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.button}
-            onPress={() => { }}
-          >
-            <Text style={styles.buttonText}>{buttonText}</Text>
-          </TouchableOpacity>
-        ))}
+        <TouchableOpacity
+          style={[styles.button, { flex: 1 }]}
+          onPress={() => { }}
+        >
+          <Text style={styles.buttonText}>Edit Profile</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { flex: 1 }]}
+          onPress={() => { }}
+        >
+          <Text style={styles.buttonText}>Share Profile</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => { }}
+        >
+          <MaterialIcons name="person-add" size={20} color="white" />
+        </TouchableOpacity>
       </View>
 
       {/* Highlight Section */}
@@ -253,11 +262,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 10,
-    gap: 10,
+    gap: 6,
   },
   button: {
-    flex: 1,
-    padding: 10,
+    padding: 8,
     borderRadius: 10,
     backgroundColor: 'gray',
     borderWidth: 1,
@@ -267,7 +275,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "600",
     color: 'white',
   },
   highlightsContainer: {
