@@ -1,50 +1,67 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
+import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { Image } from 'expo-image';
 
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
+      {/* Header Section */}
       <View style={styles.header}>
-        <View>
-          <Image
-            source={{
-              uri: 'https://picsum.photos/200/200',
-            }}
-            style={styles.avatar}
-          />
-        </View>
-        <View>
-          <Text style={{ fontSize: 16, fontWeight: 'bold' }}>100</Text>
-          <Text style={{ fontSize: 12, color: 'gray' }}>Posts</Text>
-        </View>
-        <View>
-          <Text style={{ fontSize: 16, fontWeight: 'bold' }}>100</Text>
-          <Text style={{ fontSize: 12, color: 'gray' }}>Followers</Text>
-        </View>
-        <View>
-          <Text style={{ fontSize: 16, fontWeight: 'bold' }}>100</Text>
-          <Text style={{ fontSize: 12, color: 'gray' }}>Following</Text>
-        </View>
+        <Image
+          source={{ uri: 'https://picsum.photos/200/200' }}
+          style={styles.avatar}
+        />
+        {["Posts", "Followers", "Following"].map((label, index) => (
+          <View key={index} style={styles.statistic}>
+            <Text style={styles.statValue}>100</Text>
+            <Text style={styles.statLabel}>{label}</Text>
+          </View>
+        ))}
       </View>
+
+      {/* Name Section */}
       <View style={styles.name}>
-        <Text style={{ fontSize: 16, fontWeight: 'bold' }}>John Doe</Text>
+        <Text style={styles.nameText}>John Doe</Text>
       </View>
+
+      {/* Bio Section */}
       <View style={styles.bio}>
-        <Text style={{ fontSize: 14 }}>
+        <Text style={styles.bioText}>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
         </Text>
       </View>
+
+      {/* Button Section */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => { }}>
-          <Text style={styles.buttonText}>Edit Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => { }}>
-          <Text style={styles.buttonText}>Share Profile</Text>
-        </TouchableOpacity>
+        {["Edit Profile", "Share Profile"].map((buttonText, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.button}
+            onPress={() => { }}
+          >
+            <Text style={styles.buttonText}>{buttonText}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
+
+      {/* Highlight Section */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.highlightsContainer}
+      >
+        {Array(10)
+          .fill(0)
+          .map((_, index) => (
+            <View key={index} style={styles.highlight}>
+              <Image
+                source={{ uri: 'https://picsum.photos/100/100' }}
+                style={styles.highlightImage}
+              />
+              <Text style={styles.highlightText}>Highlight {index + 1}</Text>
+            </View>
+          ))}
+      </ScrollView>
     </View>
   );
 }
@@ -65,21 +82,55 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
   },
+  statistic: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  statLabel: {
+    fontSize: 12,
+    color: 'gray',
+  },
   name: {
     padding: 10,
   },
-  title: {
-    fontSize: 20,
+  nameText: {
+    fontSize: 16,
     fontWeight: 'bold',
   },
   bio: {
     padding: 10,
   },
+  bioText: {
+    fontSize: 14,
+  },
+  highlightsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 20,
+    gap: 10,
+  },
+  highlight: {
+    alignItems: 'center',
+  },
+  highlightImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginBottom: 5,
+    borderWidth: 1,
+    borderColor: 'gray',
+  },
+  highlightText: {
+    fontSize: 12,
+    color: 'gray',
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 10,
-
     gap: 10,
   },
   button: {
@@ -96,10 +147,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
   },
 });
