@@ -73,7 +73,7 @@ export default function TabOneScreen() {
       {/* Tab Section */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
-          style={styles.tab}
+          style={[styles.tab, activeTab === 'grid' ? styles.activeTab : styles.inactiveTab]}
           onPress={() => setActiveTab('grid')}
         >
           <MaterialIcons
@@ -83,7 +83,7 @@ export default function TabOneScreen() {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.tab}
+          style={[styles.tab, activeTab === 'reels' ? styles.activeTab : styles.inactiveTab]}
           onPress={() => setActiveTab('reels')}
         >
           <MaterialIcons
@@ -93,7 +93,7 @@ export default function TabOneScreen() {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.tab}
+          style={[styles.tab, activeTab === 'tags' ? styles.activeTab : styles.inactiveTab]}
           onPress={() => setActiveTab('tags')}
         >
           <MaterialIcons
@@ -275,13 +275,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderColor: 'gray',
+    paddingTop: 10,
   },
   tab: {
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 4,
+    borderBottomWidth: 1,
+    width: '10%',
+  },
+  activeTab: {
+    borderBottomColor: 'black',
+    borderBottomWidth: 2,
+  },
+  inactiveTab: {
+    borderBottomColor: 'transparent',
+    borderBottomWidth: 1,
   },
   section: {
     alignItems: 'center',
