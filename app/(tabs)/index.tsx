@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { FlatList, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Animated } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { Image } from 'expo-image';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const screenWidth = Dimensions.get('window').width;
-const imageSize = screenWidth / 3 - 4; // Divide the screen width by 3 with spacing
+const tabWidth = screenWidth / 3; // Full width of each tab
+const underlineWidth = tabWidth / 2; // Half the width for the underline
+const imageSize = screenWidth / 3 - 4; // Grid image size
+
 export default function TabOneScreen() {
   const [activeTab, setActiveTab] = useState('grid'); // State for active tab
+  const underlineLeft = useRef(new Animated.Value((tabWidth - underlineWidth) / 2)).current; // Initial position
+
+  const handleTabPress = (tab) => {
+    setActiveTab(tab);
+    const tabIndex = ['grid', 'reels', 'tags'].indexOf(tab);
+    Animated.timing(underlineLeft, {
+      toValue: tabIndex * tabWidth + (tabWidth - underlineWidth) / 2, // Centered under the tab
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
 
   const profileHeader = () => (
     <>
@@ -72,36 +86,29 @@ export default function TabOneScreen() {
 
       {/* Tab Section */}
       <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'grid' ? styles.activeTab : styles.inactiveTab]}
-          onPress={() => setActiveTab('grid')}
-        >
-          <MaterialIcons
-            name="grid-on"
-            size={24}
-            color={activeTab === 'grid' ? 'black' : 'gray'}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'reels' ? styles.activeTab : styles.inactiveTab]}
-          onPress={() => setActiveTab('reels')}
-        >
-          <MaterialIcons
-            name="video-library"
-            size={24}
-            color={activeTab === 'reels' ? 'black' : 'gray'}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'tags' ? styles.activeTab : styles.inactiveTab]}
-          onPress={() => setActiveTab('tags')}
-        >
-          <MaterialIcons
-            name="tag"
-            size={24}
-            color={activeTab === 'tags' ? 'black' : 'gray'}
-          />
-        </TouchableOpacity>
+        {['grid', 'reels', 'tags'].map((tab, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.tab}
+            onPress={() => handleTabPress(tab)}
+          >
+            <MaterialIcons
+              name={tab === 'grid' ? 'grid-on' : tab === 'reels' ? 'video-library' : 'tag'}
+              size={24}
+              color={activeTab === tab ? 'black' : 'gray'}
+            />
+          </TouchableOpacity>
+        ))}
+        {/* Underline Animation */}
+        <Animated.View
+          style={[
+            styles.underline,
+            {
+              left: underlineLeft,
+              width: underlineWidth,
+            },
+          ]}
+        />
       </View>
     </>
   );
@@ -154,7 +161,7 @@ export default function TabOneScreen() {
         keyExtractor={(item) => item.id}
         numColumns={3}
         renderItem={({ item }) => (
-          <Image source={{ uri: item.uri }} style={styles.gridImage} />
+          <Image source={{ uri: item.uri }} style={styles.tagsImage} />
         )}
         contentContainerStyle={styles.gridContainer}
       />
@@ -273,28 +280,19 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
     alignItems: 'center',
-    paddingTop: 10,
+    position: 'relative',
   },
   tab: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 4,
-    borderBottomWidth: 1,
-    width: '10%',
+    paddingVertical: 10,
   },
-  activeTab: {
-    borderBottomColor: 'black',
-    borderBottomWidth: 2,
-  },
-  inactiveTab: {
-    borderBottomColor: 'transparent',
-    borderBottomWidth: 1,
-  },
-  section: {
-    alignItems: 'center',
-    margin: 10,
+  underline: {
+    position: 'absolute',
+    bottom: 0,
+    height: 2,
+    backgroundColor: 'black',
   },
   gridContainer: {
     paddingVertical: 10,
