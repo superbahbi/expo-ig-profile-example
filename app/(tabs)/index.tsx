@@ -93,10 +93,12 @@ export default function TabOneScreen() {
           .fill(0)
           .map((_, index) => (
             <View key={index} style={styles.highlight}>
-              <Image
-                source={{ uri: 'https://picsum.photos/100/100' }}
-                style={styles.highlightImage}
-              />
+              <View style={styles.highlightImageBorder}>
+                <Image
+                  source={{ uri: 'https://picsum.photos/100/100' }}
+                  style={styles.highlightImage}
+                />
+              </View>
               <Text style={styles.highlightText}>Highlight {index + 1}</Text>
             </View>
           ))}
@@ -286,14 +288,19 @@ const styles = StyleSheet.create({
   },
   highlight: {
     alignItems: 'center',
+
+  },
+  highlightImageBorder: {
+    borderWidth: 3,
+    borderColor: 'gray',
+    borderRadius: 999,
+    padding: 3,
   },
   highlightImage: {
     width: 60,
     height: 60,
-    borderRadius: 30,
-    marginBottom: 5,
-    borderWidth: 1,
-    borderColor: 'gray',
+    borderRadius: 999,
+
   },
   highlightText: {
     fontSize: 12,
