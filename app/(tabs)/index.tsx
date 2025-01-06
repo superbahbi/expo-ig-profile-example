@@ -1,127 +1,160 @@
-import React, { useState, useRef } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Animated, RefreshControl, useColorScheme } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { Image } from 'expo-image';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Animated,
+  Dimensions,
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  useColorScheme,
+  useWindowDimensions
+} from 'react-native';
+import { SceneMap, TabView } from 'react-native-tab-view';
 
-const screenWidth = Dimensions.get('window').width;
+const { width: screenWidth } = Dimensions.get('window');
 const tabWidth = screenWidth / 3;
 const underlineWidth = tabWidth / 2;
 const imageSize = screenWidth / 3;
 
-export default function TabOneScreen() {
+// Constants for Tabs
+const TABS = [
+  { key: 'first', title: 'Grid', icon: 'grid-on' },
+  { key: 'second', title: 'Reels', icon: 'video-library' },
+  { key: 'third', title: 'Tagged', icon: 'person-pin' },
+];
+
+// Reusable ImageGrid Component
+const ImageGrid = ({ data, style }: { data: any, style: any }) => (
+  <FlatList
+    data={data}
+    keyExtractor={(item: any) => item.id}
+    numColumns={3}
+    renderItem={({ item }) => <Image source={{ uri: item.uri }} style={style} />}
+    bounces={false}
+    scrollEnabled={true}
+    showsVerticalScrollIndicator={false}
+    contentContainerStyle={styles.gridContainer}
+  />
+);
+
+// Scene Definitions
+const GridRoute = () => (
+  <ImageGrid
+    data={Array.from({ length: 21 }, (_, index) => ({
+      id: index.toString(),
+      uri: `https://picsum.photos/200/200?random=${index + 1}`,
+    }))}
+    style={styles.gridImage}
+  />
+);
+
+const ReelsRoute = () => (
+  <ImageGrid
+    data={Array.from({ length: 21 }, (_, index) => ({
+      id: index.toString(),
+      uri: `https://picsum.photos/200/200?random=${index + 50}`,
+    }))}
+    style={styles.reelsImage}
+  />
+);
+
+const TaggedRoute = () => (
+  <ImageGrid
+    data={Array.from({ length: 21 }, (_, index) => ({
+      id: index.toString(),
+      uri: `https://picsum.photos/200/200?random=${index + 100}`,
+    }))}
+    style={styles.tagsImage}
+  />
+);
+
+const renderScene = SceneMap({
+  first: GridRoute,
+  second: ReelsRoute,
+  third: TaggedRoute,
+});
+
+// Profile Header Component
+const ProfileHeader = () => (
+  <View>
+    <View style={styles.header}>
+      <Image source={{ uri: 'https://picsum.photos/200/200' }} style={styles.avatar} />
+      {['Posts', 'Followers', 'Following'].map((label, index) => (
+        <View key={index} style={styles.statistic}>
+          <Text style={styles.statValue}>100</Text>
+          <Text style={styles.statLabel}>{label}</Text>
+        </View>
+      ))}
+    </View>
+    <View style={styles.name}>
+      <Text style={styles.nameText}>John Doe</Text>
+    </View>
+    <View style={styles.bio}>
+      <Text style={styles.bioText}>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+      </Text>
+    </View>
+    <View style={styles.buttonContainer}>
+      <TouchableOpacity style={[styles.button, { flex: 1 }]}>
+        <Text style={styles.buttonText}>Edit Profile</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.button, { flex: 1 }]}>
+        <Text style={styles.buttonText}>Share Profile</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button}>
+        <MaterialIcons name="person-add" size={20} color="white" />
+      </TouchableOpacity>
+    </View>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} bounces={false}>
+      {Array(10)
+        .fill(0)
+        .map((_, index) => (
+          <View key={index} style={styles.highlight}>
+            <View style={styles.highlightImageBorder}>
+              <Image
+                source={{ uri: 'https://picsum.photos/100/100' }}
+                style={styles.highlightImage}
+              />
+            </View>
+            <Text style={styles.highlightText}>Highlight {index + 1}</Text>
+          </View>
+        ))}
+    </ScrollView>
+  </View>
+);
+
+// Main Component
+const TabOneScreen = () => {
   const colorScheme = useColorScheme();
-  const [activeTab, setActiveTab] = useState('grid');
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
   const underlineLeft = useRef(new Animated.Value((tabWidth - underlineWidth) / 2)).current;
   const [refreshing, setRefreshing] = useState(false);
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const contentOpacity = useRef(new Animated.Value(0)).current;
-  const previousTab = useRef(activeTab);
-
-  const handleTabPress = (tab: string) => {
-    setActiveTab(tab);
-    const tabIndex = ['grid', 'reels', 'tags'].indexOf(tab);
+  useEffect(() => {
     Animated.timing(underlineLeft, {
-      toValue: tabIndex * tabWidth + (tabWidth - underlineWidth) / 2,
+      toValue: index * tabWidth + (tabWidth - underlineWidth) / 2,
       duration: 300,
       useNativeDriver: false,
     }).start();
+  }, [index]);
+
+  // Modify handleTabPress to only update the index
+  const handleTabPress = (tabIndex: number) => {
+    setIndex(tabIndex);
   };
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    // Simulate a network request or data refresh
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  };
-
-  const profileHeader = () => (
-    <>
-      {/* Header Section */}
-      <View style={styles.header}>
-        <Image
-          source={{ uri: 'https://picsum.photos/200/200' }}
-          style={styles.avatar}
-        />
-        {["Posts", "Followers", "Following"].map((label, index) => (
-          <View key={index} style={styles.statistic}>
-            <Text style={styles.statValue}>100</Text>
-            <Text style={styles.statLabel}>{label}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Name Section */}
-      <View style={styles.name}>
-        <Text style={styles.nameText}>John Doe</Text>
-      </View>
-
-      {/* Bio Section */}
-      <View style={styles.bio}>
-        <Text style={styles.bioText}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-        </Text>
-      </View>
-
-      {/* Button Section */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.button, { flex: 1 }]}
-          onPress={() => { }}
-        >
-          <Text style={styles.buttonText}>Edit Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { flex: 1 }]}
-          onPress={() => { }}
-        >
-          <Text style={styles.buttonText}>Share Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => { }}
-        >
-          <MaterialIcons name="person-add" size={20} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Highlight Section */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        bounces={false}
-      >
-        {Array(10)
-          .fill(0)
-          .map((_, index) => (
-            <View key={index} style={styles.highlight}>
-              <View style={styles.highlightImageBorder}>
-                <Image
-                  source={{ uri: 'https://picsum.photos/100/100' }}
-                  style={styles.highlightImage}
-                />
-              </View>
-              <Text style={styles.highlightText}>Highlight {index + 1}</Text>
-            </View>
-          ))}
-      </ScrollView>
-    </>
-  );
-
-  // Add this new component
-  const tabSection = () => (
+  const renderTabBar = (props: any) => (
     <View style={styles.tabContainer}>
-      {['grid', 'reels', 'tags'].map((tab, index) => (
-        <TouchableOpacity
-          key={index}
-          style={styles.tab}
-          onPress={() => handleTabPress(tab)}
-        >
+      {props.navigationState.routes.map((route: any, i: number) => (
+        <TouchableOpacity key={route.key} style={styles.tab} onPress={() => handleTabPress(i)}>
           <MaterialIcons
-            name={tab === 'grid' ? 'grid-on' : tab === 'reels' ? 'video-library' : 'tag'}
+            name={route.icon}
             size={24}
-            color={activeTab === tab ? colorScheme === 'dark' ? 'white' : 'black' : 'gray'}
+            color={i === index ? colorScheme === 'dark' ? '#fff' : '#000' : '#666'}
           />
         </TouchableOpacity>
       ))}
@@ -129,152 +162,54 @@ export default function TabOneScreen() {
         style={[
           styles.underline,
           {
-            left: underlineLeft,
             width: underlineWidth,
+            left: underlineLeft,
+            backgroundColor: colorScheme === 'dark' ? '#fff' : '#000',
           },
         ]}
       />
     </View>
   );
 
-  const gridContent = () => {
-    const images = Array.from({ length: 21 }, (_, index) => ({
-      id: index.toString(),
-      uri: `https://picsum.photos/200/200?random=${index + 1}`,
-    }));
-
-    return (
-      <FlatList
-        data={images}
-        keyExtractor={(item) => item.id}
-        numColumns={3}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item.uri }} style={styles.gridImage} />
-        )}
-        contentContainerStyle={styles.gridContainer}
-      />
-    );
+  const onRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 2000);
   };
-  const reelsContent = () => {
-    const images = Array.from({ length: 21 }, (_, index) => ({
-      id: index.toString(),
-      uri: `https://picsum.photos/200/200?random=${index + 50}`,
-    }));
-
-    return (
-      <FlatList
-        data={images}
-        keyExtractor={(item) => item.id}
-        numColumns={3}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item.uri }} style={styles.reelsImage} />
-        )}
-        contentContainerStyle={styles.gridContainer}
-      />
-    );
-  };
-  const tagsContent = () => {
-    const images = Array.from({ length: 21 }, (_, index) => ({
-      id: index.toString(),
-      uri: `https://picsum.photos/200/200?random=${index + 100}`,
-    }));
-
-    return (
-      <FlatList
-        data={images}
-        keyExtractor={(item) => item.id}
-        numColumns={3}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item.uri }} style={styles.tagsImage} />
-        )}
-        contentContainerStyle={styles.gridContainer}
-      />
-    );
-  };
-
-  const renderTabContent = () => {
-    const animateContent = (content: React.ReactNode, direction: number) => {
-      // Set initial slide position based on direction
-      slideAnim.setValue(direction * Dimensions.get('window').width); // Slide from off-screen
-      contentOpacity.setValue(0); // Reset opacity
-
-      Animated.parallel([
-        Animated.timing(slideAnim, {
-          toValue: 0, // Slide into position
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(contentOpacity, {
-          toValue: 1, // Fade in
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
-
-      return (
-        <Animated.View
-          style={{
-            transform: [{ translateX: slideAnim }],
-            opacity: contentOpacity,
-          }}
-        >
-          {content}
-        </Animated.View>
-      );
-    };
-
-    // Determine the slide direction based on tab order
-    const direction =
-      ['grid', 'reels', 'tags'].indexOf(activeTab) >
-        ['grid', 'reels', 'tags'].indexOf(previousTab.current)
-        ? -1 // Slide from right to left when moving forward
-        : 1;  // Slide from left to right when moving backward
-
-    // Update the previous tab to the current activeTab
-    previousTab.current = activeTab;
-
-    switch (activeTab) {
-      case 'grid':
-        return animateContent(gridContent(), direction);
-      case 'reels':
-        return animateContent(reelsContent(), direction);
-      case 'tags':
-        return animateContent(tagsContent(), direction);
-      default:
-        return null;
-    }
-  };
-
 
   return (
-    <FlatList
-      data={['tabSection', 'tabContent']} // Only the tab content needs to scroll
-      renderItem={({ item }) => {
-        if (item === 'tabSection') return tabSection();
-        if (item === 'tabContent') return renderTabContent();
-        return null;
-      }}
-      keyExtractor={(item, index) => index.toString()}
-      ListHeaderComponent={
-        <>
-          {profileHeader()}
-        </>
-      }
-      stickyHeaderIndices={[1]}
-      contentContainerStyle={styles.scrollContainer}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    />
+    <View style={styles.container}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        stickyHeaderIndices={[1]}
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled
+        style={styles.container}
+      >
+        <ProfileHeader />
+        <View>
+          {renderTabBar({ navigationState: { index, routes: TABS } })}
+        </View>
+        <TabView
+          navigationState={{ index, routes: TABS }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{ width: layout.width }}
+          renderTabBar={() => null}
+          style={[styles.tabView, { flex: 1 }]}
+        />
+      </ScrollView>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollContainer: {
-    paddingBottom: 20,
+  tabView: {
+    height: screenWidth * 2,
   },
   header: {
     flexDirection: 'row',
@@ -355,22 +290,22 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     position: 'relative',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
   tab: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 12,
   },
   underline: {
     position: 'absolute',
     bottom: 0,
     height: 2,
-    backgroundColor: 'black',
   },
   gridContainer: {
-    paddingVertical: 10,
+    flex: 1,
     gap: 1,
   },
   gridImage: {
@@ -392,3 +327,5 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
 });
+
+export default TabOneScreen;
