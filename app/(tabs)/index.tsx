@@ -36,6 +36,7 @@ const ImageGrid = ({ data, style }: { data: any, style: any }) => (
     renderItem={({ item }) => <Image source={{ uri: item.uri }} style={style} />}
     bounces={false}
     scrollEnabled={true}
+    nestedScrollEnabled
     showsVerticalScrollIndicator={false}
     contentContainerStyle={styles.gridContainer}
   />
@@ -178,28 +179,33 @@ const TabOneScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
+      <FlatList
+        ListHeaderComponent={() => (
+          <>
+            <ProfileHeader />
+            <View>
+              {renderTabBar({ navigationState: { index, routes: TABS } })}
+            </View>
+          </>
+        )}
+        ListHeaderComponentStyle={{ backgroundColor: 'transparent' }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         stickyHeaderIndices={[1]}
         showsVerticalScrollIndicator={false}
-        nestedScrollEnabled
-        style={styles.container}
-      >
-        <ProfileHeader />
-        <View>
-          {renderTabBar({ navigationState: { index, routes: TABS } })}
-        </View>
-        <TabView
-          navigationState={{ index, routes: TABS }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{ width: layout.width }}
-          renderTabBar={() => null}
-          style={[styles.tabView, { flex: 1 }]}
-        />
-      </ScrollView>
+        data={[{ key: 'tabview' }]}
+        renderItem={() => (
+          <TabView
+            navigationState={{ index, routes: TABS }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            initialLayout={{ width: layout.width }}
+            renderTabBar={() => null}
+            style={[styles.tabView, { flex: 1 }]}
+          />
+        )}
+      />
     </View>
   );
 };
