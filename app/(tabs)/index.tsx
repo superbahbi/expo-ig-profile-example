@@ -6,7 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 const screenWidth = Dimensions.get('window').width;
 const tabWidth = screenWidth / 3;
-const underlineWidth = tabWidth / 3;
+const underlineWidth = tabWidth / 2;
 const imageSize = screenWidth / 3;
 
 export default function TabOneScreen() {
