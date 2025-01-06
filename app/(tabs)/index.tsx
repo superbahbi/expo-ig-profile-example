@@ -14,6 +14,9 @@ export default function TabOneScreen() {
   const [activeTab, setActiveTab] = useState('grid');
   const underlineLeft = useRef(new Animated.Value((tabWidth - underlineWidth) / 2)).current;
   const [refreshing, setRefreshing] = useState(false);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const contentOpacity = useRef(new Animated.Value(0)).current;
+  const previousTab = useRef(activeTab);
 
   const handleTabPress = (tab: string) => {
     setActiveTab(tab);
@@ -190,17 +193,58 @@ export default function TabOneScreen() {
   };
 
   const renderTabContent = () => {
+    const animateContent = (content: React.ReactNode, direction: number) => {
+      // Set initial slide position based on direction
+      slideAnim.setValue(direction * Dimensions.get('window').width); // Slide from off-screen
+      contentOpacity.setValue(0); // Reset opacity
+
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0, // Slide into position
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentOpacity, {
+          toValue: 1, // Fade in
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+
+      return (
+        <Animated.View
+          style={{
+            transform: [{ translateX: slideAnim }],
+            opacity: contentOpacity,
+          }}
+        >
+          {content}
+        </Animated.View>
+      );
+    };
+
+    // Determine the slide direction based on tab order
+    const direction =
+      ['grid', 'reels', 'tags'].indexOf(activeTab) >
+        ['grid', 'reels', 'tags'].indexOf(previousTab.current)
+        ? -1 // Slide from right to left when moving forward
+        : 1;  // Slide from left to right when moving backward
+
+    // Update the previous tab to the current activeTab
+    previousTab.current = activeTab;
+
     switch (activeTab) {
       case 'grid':
-        return gridContent();
+        return animateContent(gridContent(), direction);
       case 'reels':
-        return reelsContent();
+        return animateContent(reelsContent(), direction);
       case 'tags':
-        return tagsContent();
+        return animateContent(tagsContent(), direction);
       default:
         return null;
     }
   };
+
 
   return (
     <FlatList
