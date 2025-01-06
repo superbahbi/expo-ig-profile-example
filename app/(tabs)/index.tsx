@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Animated, RefreshControl } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Animated, RefreshControl, useColorScheme } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { Image } from 'expo-image';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ const underlineWidth = tabWidth / 2;
 const imageSize = screenWidth / 3;
 
 export default function TabOneScreen() {
+  const colorScheme = useColorScheme();
   const [activeTab, setActiveTab] = useState('grid');
   const underlineLeft = useRef(new Animated.Value((tabWidth - underlineWidth) / 2)).current;
   const [refreshing, setRefreshing] = useState(false);
@@ -117,7 +118,7 @@ export default function TabOneScreen() {
           <MaterialIcons
             name={tab === 'grid' ? 'grid-on' : tab === 'reels' ? 'video-library' : 'tag'}
             size={24}
-            color={activeTab === tab ? 'black' : 'gray'}
+            color={activeTab === tab ? colorScheme === 'dark' ? 'white' : 'black' : 'gray'}
           />
         </TouchableOpacity>
       ))}
