@@ -103,34 +103,35 @@ export default function TabOneScreen() {
             </View>
           ))}
       </ScrollView>
-
-      {/* Tab Section */}
-      <View style={styles.tabContainer}>
-        {['grid', 'reels', 'tags'].map((tab, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.tab}
-            onPress={() => handleTabPress(tab)}
-          >
-            <MaterialIcons
-              name={tab === 'grid' ? 'grid-on' : tab === 'reels' ? 'video-library' : 'tag'}
-              size={24}
-              color={activeTab === tab ? 'black' : 'gray'}
-            />
-          </TouchableOpacity>
-        ))}
-        {/* Underline Animation */}
-        <Animated.View
-          style={[
-            styles.underline,
-            {
-              left: underlineLeft,
-              width: underlineWidth,
-            },
-          ]}
-        />
-      </View>
     </>
+  );
+
+  // Add this new component
+  const tabSection = () => (
+    <View style={styles.tabContainer}>
+      {['grid', 'reels', 'tags'].map((tab, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.tab}
+          onPress={() => handleTabPress(tab)}
+        >
+          <MaterialIcons
+            name={tab === 'grid' ? 'grid-on' : tab === 'reels' ? 'video-library' : 'tag'}
+            size={24}
+            color={activeTab === tab ? 'black' : 'gray'}
+          />
+        </TouchableOpacity>
+      ))}
+      <Animated.View
+        style={[
+          styles.underline,
+          {
+            left: underlineLeft,
+            width: underlineWidth,
+          },
+        ]}
+      />
+    </View>
   );
 
   const gridContent = () => {
@@ -187,6 +188,7 @@ export default function TabOneScreen() {
       />
     );
   };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'grid':
@@ -202,13 +204,19 @@ export default function TabOneScreen() {
 
   return (
     <FlatList
-      data={['header', 'tabContent']}
+      data={['tabSection', 'tabContent']} // Only the tab content needs to scroll
       renderItem={({ item }) => {
-        if (item === 'header') return profileHeader();
+        if (item === 'tabSection') return tabSection();
         if (item === 'tabContent') return renderTabContent();
         return null;
       }}
       keyExtractor={(item, index) => index.toString()}
+      ListHeaderComponent={
+        <>
+          {profileHeader()}
+        </>
+      }
+      stickyHeaderIndices={[1]}
       contentContainerStyle={styles.scrollContainer}
       style={{ backgroundColor: 'white' }}
       refreshControl={
