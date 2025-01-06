@@ -4,8 +4,7 @@ A modern React Native application built with Expo.
 
 ## 🎥 Demo
 
-
-[![Watch the video](https://raw.githubusercontent.com/superbahbi/expo-ig-profile-example/main/assets/ScreenRecording_01-05-2025%2016-17-17_1.MP4)](https://raw.githubusercontent.com/superbahbi/expo-ig-profile-example/main/assets/ScreenRecording_01-05-2025%2016-17-17_1.MP4)
+[![Demo Video](./ScreenRecording_01-05-2025%2016-17-17_1.MP4)](./ScreenRecording_01-05-2025%2016-17-17_1.MP4)
 ## 🚀 Getting Started
 
 ### Prerequisites
