@@ -7,7 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 const screenWidth = Dimensions.get('window').width;
 const tabWidth = screenWidth / 3;
 const underlineWidth = tabWidth / 3;
-const imageSize = screenWidth / 3 - 4;
+const imageSize = screenWidth / 3;
 
 export default function TabOneScreen() {
   const [activeTab, setActiveTab] = useState('grid');
@@ -132,7 +132,7 @@ export default function TabOneScreen() {
   );
 
   const gridContent = () => {
-    const images = Array.from({ length: 20 }, (_, index) => ({
+    const images = Array.from({ length: 21 }, (_, index) => ({
       id: index.toString(),
       uri: `https://picsum.photos/200/200?random=${index + 1}`,
     }));
@@ -150,7 +150,7 @@ export default function TabOneScreen() {
     );
   };
   const reelsContent = () => {
-    const images = Array.from({ length: 20 }, (_, index) => ({
+    const images = Array.from({ length: 21 }, (_, index) => ({
       id: index.toString(),
       uri: `https://picsum.photos/200/200?random=${index + 50}`,
     }));
@@ -168,7 +168,7 @@ export default function TabOneScreen() {
     );
   };
   const tagsContent = () => {
-    const images = Array.from({ length: 20 }, (_, index) => ({
+    const images = Array.from({ length: 21 }, (_, index) => ({
       id: index.toString(),
       uri: `https://picsum.photos/200/200?random=${index + 100}`,
     }));
@@ -317,20 +317,24 @@ const styles = StyleSheet.create({
   },
   gridContainer: {
     paddingVertical: 10,
+    gap: 1,
   },
   gridImage: {
     width: imageSize,
     height: imageSize,
-    margin: 2,
+    marginInlineEnd: 1,
+    marginBottom: 1,
   },
   reelsImage: {
     width: imageSize,
     height: imageSize * 2,
-    margin: 2,
+    marginInlineEnd: 1,
+    marginBottom: 1,
   },
   tagsImage: {
     width: imageSize,
     height: imageSize,
-    margin: 2,
+    marginInlineEnd: 1,
+    marginBottom: 1,
   },
 });
