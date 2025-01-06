@@ -86,8 +86,7 @@ export default function TabOneScreen() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.highlightsContainer}
-        style={{ backgroundColor: 'white' }}
+        bounces={false}
       >
         {Array(10)
           .fill(0)
@@ -218,7 +217,6 @@ export default function TabOneScreen() {
       }
       stickyHeaderIndices={[1]}
       contentContainerStyle={styles.scrollContainer}
-      style={{ backgroundColor: 'white' }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
@@ -289,12 +287,11 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   highlightsContainer: {
-    flexDirection: 'row',
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    gap: 10,
+
   },
   highlight: {
+    paddingVertical: 20,
+    paddingHorizontal: 4,
     alignItems: 'center',
 
   },
