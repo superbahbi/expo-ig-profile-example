@@ -331,12 +331,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: 'white',
   },
-  highlightsContainer: {
-
-  },
   highlight: {
     paddingVertical: 20,
-    paddingHorizontal: 4,
+    paddingLeft: 10,
     alignItems: 'center',
 
   },
